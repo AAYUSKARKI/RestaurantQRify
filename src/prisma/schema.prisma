@@ -3,6 +3,10 @@ generator client {
   output   = "../generated/prisma"
 }
 
+generator dbml {
+  provider = "prisma-dbml-generator"
+}
+
 datasource db {
   provider = "postgresql"
 }
