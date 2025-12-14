@@ -19,6 +19,14 @@ class UserController {
         const serviceResponse: ServiceResponse<LoginResponse | null> = await userService.loginUser(data, ip, userAgent);
         return handleServiceResponse(serviceResponse, res);
     }
+
+    public refreshSession: RequestHandler = async (req: Request, res: Response) => {
+        const refreshToken = req.body.refreshToken as string;
+        const ip = req.ip;
+        const userAgent = req.headers["user-agent"];
+        const serviceResponse: ServiceResponse<{ accessToken: string, refreshToken: string } | null> = await userService.refreshSession(refreshToken, ip, userAgent);
+        return handleServiceResponse(serviceResponse, res);
+    }
 }
 
 export const userController = new UserController();

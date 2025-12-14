@@ -1,7 +1,7 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import { Router } from "express";
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
-import { CreateUserSchema, UserResponseSchema, userSchema, LoginResponseSchema, LoginUserSchema } from "./userModel";
+import { CreateUserSchema, UserResponseSchema, userSchema, LoginResponseSchema, LoginUserSchema, RefreshSessionResponseSchema } from "./userModel";
 import { userController } from "./userController";
 import { StatusCodes } from "http-status-codes";
 
@@ -57,3 +57,32 @@ userRegistry.registerPath({
 });
 
 userRouter.post("/user/login", userController.loginUser);
+
+userRegistry.registerPath({
+    method: "post",
+    path: "/api/user/refresh",
+    summary: "Refresh a user session",
+    tags: ["User"],
+    request: {
+        body: {
+            description: "Refresh token that needs to be refreshed",
+            required: true,
+            content: {
+                "application/json": {
+                    schema: {
+                        type: "object",
+                        properties: {
+                            refreshToken: {
+                                type: "string",
+                                description: "Refresh token that needs to be refreshed",
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    },
+    responses: createApiResponse(RefreshSessionResponseSchema, "Session refreshed successfully", StatusCodes.OK),
+});
+
+userRouter.post("/user/refresh", userController.refreshSession);

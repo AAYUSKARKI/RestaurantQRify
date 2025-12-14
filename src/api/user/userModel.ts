@@ -1,6 +1,7 @@
 import { extendZodWithOpenApi } from "@asteasolutions/zod-to-openapi";
 import { z } from "zod";
 import { Role } from "@/generated/prisma/enums";
+import { ref } from "node:process";
 
 extendZodWithOpenApi(z);
 
@@ -58,6 +59,17 @@ export const LoginResponseSchema = z.object({
   }),
   user: UserResponseSchema,
 });
+
+export const RefreshSessionResponseSchema = z.object({
+  accessToken: z.string().openapi({ 
+    description: "JWT access token for authenticated requests", 
+    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxx.xxxxx" 
+  }),
+  refreshToken: z.string().openapi({
+    description: "Token used to obtain new access tokens",
+    example: "refr_123e4567-e89b-12d3-a456-426655440000"
+  })
+})
 
 export const ForgotPasswordSchema = z.object({
   email: z.email().openapi({ description: "Email address of the user to reset the password", example: "lK7oR@example.com"}),

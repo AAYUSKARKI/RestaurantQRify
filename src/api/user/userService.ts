@@ -13,14 +13,14 @@ export class UserService {
     }
 
     async createUser(data: CreateUser): Promise<ServiceResponse<UserResponse | null>> {
-        try{
+        try {
             const userExists = await this.userRepository.findUserByEmail(data.email);
-            if(userExists) {
+            if (userExists) {
                 return ServiceResponse.failure("User already exists", null, StatusCodes.CONFLICT);
             }
 
             const hashedPassword = await bcrypt.hash(data.password, 10);
-            const user = await this.userRepository.createUser({...data, password: hashedPassword});
+            const user = await this.userRepository.createUser({ ...data, password: hashedPassword });
             return ServiceResponse.success<UserResponse>("User created successfully", user);
         } catch (error) {
             console.error("Error creating user:", error);
@@ -34,13 +34,13 @@ export class UserService {
             if (!user) {
                 return ServiceResponse.failure("User not found", null, StatusCodes.NOT_FOUND);
             }
-            
+
             const passwordMatch = await bcrypt.compare(data.password, user.password);
             if (!passwordMatch) {
                 return ServiceResponse.failure("Invalid credentials", null, StatusCodes.UNAUTHORIZED);
             }
 
-            if(!user.isActive) {
+            if (!user.isActive) {
                 return ServiceResponse.failure("User Account is Inactive", null, StatusCodes.UNAUTHORIZED);
             }
 
@@ -49,12 +49,42 @@ export class UserService {
             const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
             await this.userRepository.createRefreshToken(user.id, refreshToken, expiresAt, ip, userAgent);
-            
+
             const { password, ...userWithoutPassword } = user;
             return ServiceResponse.success<LoginResponse>("Login successful", { user: userWithoutPassword, accessToken, refreshToken }, StatusCodes.OK);
         } catch (error) {
             console.error("Error logging in user:", error);
             return ServiceResponse.failure("Error logging in user", null, StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async refreshSession(refreshToken: string,ip?: string, userAgent?: string): Promise<ServiceResponse<{ accessToken: string, refreshToken: string } | null>> {
+        try {
+            const refreshTokenData = await this.userRepository.findValidRefreshToken(refreshToken);
+            if (!refreshTokenData || refreshTokenData.revoked) {
+                return ServiceResponse.failure("Invalid refresh token", null, StatusCodes.FORBIDDEN);
+            }
+
+            if (refreshTokenData.expiresAt < new Date()) {
+                await this.userRepository.revokeSingleToken(refreshToken);
+                return ServiceResponse.failure("Refresh token expired", null, StatusCodes.FORBIDDEN);
+            }
+
+            if (!refreshTokenData.user.isActive) {
+                await this.userRepository.revokeSingleToken(refreshToken);
+                return ServiceResponse.failure("User Account is Inactive", null, StatusCodes.UNAUTHORIZED);
+            }
+
+            await this.userRepository.revokeSingleToken(refreshToken);
+
+            const newRefreshToken = jwt.sign({ userId: refreshTokenData.user.id }, process.env.JWT_SECRET as string, { expiresIn: "7d" });
+            const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+            await this.userRepository.createRefreshToken(refreshTokenData.user.id, newRefreshToken, expiresAt, ip, userAgent);
+            const accessToken = jwt.sign({ userId: refreshTokenData.user.id }, process.env.JWT_SECRET as string, { expiresIn: "45m" });
+            return ServiceResponse.success<{ accessToken: string, refreshToken: string }>("Session refreshed successfully", { accessToken, refreshToken: newRefreshToken }, StatusCodes.OK);
+        } catch (error) {
+            console.error("Error refreshing session:", error);
+            return ServiceResponse.failure("Error refreshing session", null, StatusCodes.INTERNAL_SERVER_ERROR);
         }
     }
 }
