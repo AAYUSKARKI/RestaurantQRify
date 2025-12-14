@@ -9,7 +9,6 @@ const userRepository = new UserRepository();
 
 interface JWTPayload {
   userId: string;
-  tenantId: string;
   iat?: number;
   exp?: number;
 }

@@ -51,4 +51,16 @@ export class UserRepository {
     async findById(id: string): Promise<User | null> {
         return prisma.user.findUnique({ where: { id } });
     }
+
+    async revokeAllUserTokens(userId: string) {
+        return prisma.refreshToken.updateMany({
+            where: { 
+                userId, 
+                revoked: false 
+            },
+            data: { 
+                revoked: true 
+            },
+        });
+    }
 }

@@ -4,6 +4,7 @@ import { UserRepository } from "./userRepository";
 import { ServiceResponse } from "@/common/utils/serviceResponse";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import cache from "memory-cache";
 
 export class UserService {
     private userRepository: UserRepository;
@@ -75,6 +76,18 @@ export class UserService {
                 return ServiceResponse.failure("User Account is Inactive", null, StatusCodes.UNAUTHORIZED);
             }
 
+            if(ip && refreshTokenData.ip && ip !== refreshTokenData.ip) {
+                console.warn(`SECURITY ALERT: IP changed for token ${refreshTokenData.id}. Old IP: ${refreshTokenData.ip}, New IP: ${ip}`);
+                await this.userRepository.revokeAllUserTokens(refreshTokenData.user.id);
+                return ServiceResponse.failure("Suspicious location change detected. Re-login required.", null, StatusCodes.FORBIDDEN);
+            }
+
+            if(userAgent && refreshTokenData.userAgent && userAgent !== refreshTokenData.userAgent) {
+                console.warn(`SECURITY ALERT: User Agent changed for token ${refreshTokenData.id}. Old User Agent: ${refreshTokenData.userAgent}, New User Agent: ${userAgent}`);
+                await this.userRepository.revokeAllUserTokens(refreshTokenData.user.id);
+                return ServiceResponse.failure("Suspicious device change detected. Re-login required.", null, StatusCodes.FORBIDDEN);
+            }
+
             await this.userRepository.revokeSingleToken(refreshToken);
 
             const newRefreshToken = jwt.sign({ userId: refreshTokenData.user.id }, process.env.JWT_SECRET as string, { expiresIn: "7d" });
@@ -88,9 +101,17 @@ export class UserService {
         }
     }
 
-    async logoutUser(refreshToken: string): Promise<ServiceResponse<null>> {
+    async logoutUser(refreshToken: string, accessToken: string): Promise<ServiceResponse<null>> {
         try {
             await this.userRepository.revokeSingleToken(refreshToken);
+
+            const decodedToken = jwt.decode(accessToken) as { exp?: number };
+
+            if (decodedToken?.exp) {
+                const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+                const timeToLive = decodedToken.exp - currentTimeInSeconds;
+                cache.put(accessToken,true, timeToLive * 1000);
+            }
             return ServiceResponse.success("Logout successful", null, StatusCodes.OK);
         } catch (error) {
             console.error("Error logging out user:", error);

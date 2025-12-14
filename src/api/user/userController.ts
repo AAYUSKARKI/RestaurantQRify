@@ -30,7 +30,17 @@ class UserController {
 
     public logoutUser: RequestHandler = async (req: Request, res: Response) => {
         const refreshToken = req.body.refreshToken as string;
-        const serviceResponse: ServiceResponse<null> = await userService.logoutUser(refreshToken);
+
+        const accessToken = req.headers.authorization?.replace("Bearer ", "").trim();
+
+        if (!accessToken) {
+            return handleServiceResponse(
+                ServiceResponse.failure("Unauthorized", null, StatusCodes.UNAUTHORIZED),
+                res
+            );
+        }
+
+        const serviceResponse: ServiceResponse<null> = await userService.logoutUser(refreshToken,accessToken);
         return handleServiceResponse(serviceResponse, res);
     }
 }
