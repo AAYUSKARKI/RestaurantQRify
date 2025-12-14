@@ -4,7 +4,7 @@ import { UserRepository } from "./userRepository";
 import { ServiceResponse } from "@/common/utils/serviceResponse";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import cache from "memory-cache";
+import { redisClient } from "@/common/lib/redis";
 
 export class UserService {
     private userRepository: UserRepository;
@@ -110,7 +110,9 @@ export class UserService {
             if (decodedToken?.exp) {
                 const currentTimeInSeconds = Math.floor(Date.now() / 1000);
                 const timeToLive = decodedToken.exp - currentTimeInSeconds;
-                cache.put(accessToken,true, timeToLive * 1000);
+                const TOKEN_PREFIX = 'revoked:access:'
+                const key = `${TOKEN_PREFIX}${accessToken}`;
+                redisClient.set(key, 'true', { EX: timeToLive*1000, NX: true });
             }
             return ServiceResponse.success("Logout successful", null, StatusCodes.OK);
         } catch (error) {

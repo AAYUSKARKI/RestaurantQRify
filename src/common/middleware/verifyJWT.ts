@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { StatusCodes } from "http-status-codes";
 import { ServiceResponse, handleServiceResponse } from "@/common/utils/serviceResponse";
 import { UserRepository } from "@/api/user/userRepository";
-import cache from "memory-cache";
+import { redisClient } from "../lib/redis";
 
 const userRepository = new UserRepository();
 
@@ -35,9 +35,10 @@ export const verifyJWT = async (req: Request, res: Response, next: NextFunction)
       );
     }
 
-    const token = authHeader.split(" ")[1];
-
-    const isBlacklistedToken = cache.get(token);
+    const accessToken = authHeader.split(" ")[1];
+    const TOKEN_PREFIX = 'revoked:access:'
+    const key = `${TOKEN_PREFIX}${accessToken}`;
+    const isBlacklistedToken = await redisClient.get(key);
 
     if (isBlacklistedToken) {
       return handleServiceResponse(
@@ -46,7 +47,7 @@ export const verifyJWT = async (req: Request, res: Response, next: NextFunction)
       );
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JWTPayload;
+    const decoded = jwt.verify(accessToken, process.env.JWT_SECRET as string) as JWTPayload;
 
     const user = await userRepository.findById(decoded.userId);
 
