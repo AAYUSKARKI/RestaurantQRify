@@ -1,9 +1,11 @@
 import { server } from "@/server";
+import { connectRedis } from "./common/lib/redis";
 
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
+    connectRedis();
 });
 
 const gracefulShutdown = () => {
