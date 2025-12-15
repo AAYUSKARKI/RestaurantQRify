@@ -1,5 +1,6 @@
 import type { ErrorRequestHandler, RequestHandler } from "express";
 import { StatusCodes } from "http-status-codes";
+import logger from "../utils/logger";
 
 const unexpectedRequest: RequestHandler = (_req, res) => {
   res.status(StatusCodes.NOT_FOUND).json({
@@ -8,7 +9,7 @@ const unexpectedRequest: RequestHandler = (_req, res) => {
 };
 
 const globalErrorHandler: ErrorRequestHandler = (err, _req, res, next) => {
-  console.error("Global error:", err);
+  logger.error("Global error:", err);
 
   if (res.headersSent) {
     return next(err);

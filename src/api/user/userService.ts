@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { redisClient } from "@/common/lib/redis";
 import { AUTH_AUDIT_ACTIONS } from "@/common/constants/authAuditActions";
+import logger from "@/common/utils/logger";
 
 export class UserService {
     private auditLogQueue = new AuditLogQueue();
@@ -27,7 +28,7 @@ export class UserService {
             const user = await this.userRepository.createUser({ ...data, password: hashedPassword });
             return ServiceResponse.success<UserResponse>("User created successfully", user);
         } catch (error) {
-            console.error("Error creating user:", error);
+            logger.error("Error creating user:", error);
             return ServiceResponse.failure("Error creating user", null, StatusCodes.INTERNAL_SERVER_ERROR);
         }
     }
@@ -93,7 +94,7 @@ export class UserService {
             });
             return ServiceResponse.success<LoginResponse>("Login successful", { user: userWithoutPassword, accessToken, refreshToken }, StatusCodes.OK);
         } catch (error) {
-            console.error("Error logging in user:", error);
+            logger.error("Error logging in user:", error);
             return ServiceResponse.failure("Error logging in user", null, StatusCodes.INTERNAL_SERVER_ERROR);
         }
     }
@@ -135,7 +136,7 @@ export class UserService {
             const accessToken = jwt.sign({ userId: refreshTokenData.user.id }, process.env.JWT_SECRET as string, { expiresIn: "45m" });
             return ServiceResponse.success<{ accessToken: string, refreshToken: string }>("Session refreshed successfully", { accessToken, refreshToken: newRefreshToken }, StatusCodes.OK);
         } catch (error) {
-            console.error("Error refreshing session:", error);
+            logger.error("Error refreshing session:", error);
             return ServiceResponse.failure("Error refreshing session", null, StatusCodes.INTERNAL_SERVER_ERROR);
         }
     }
@@ -155,7 +156,7 @@ export class UserService {
             }
             return ServiceResponse.success("Logout successful", null, StatusCodes.OK);
         } catch (error) {
-            console.error("Error logging out user:", error);
+            logger.error("Error logging out user:", error);
             return ServiceResponse.failure("Error logging out user", null, StatusCodes.INTERNAL_SERVER_ERROR);
         }
     }

@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import { ServiceResponse, handleServiceResponse } from "@/common/utils/serviceResponse";
 import { UserRepository } from "@/api/user/userRepository";
 import { redisClient } from "../lib/redis";
+import logger from "../utils/logger";
 
 const userRepository = new UserRepository();
 
@@ -78,7 +79,7 @@ export const verifyJWT = async (req: Request, res: Response, next: NextFunction)
         res
       );
     }
-    console.error("JWT Verification Error:", error);
+    logger.error("JWT Verification Error:", error);
     return handleServiceResponse(
       ServiceResponse.failure("Authentication failed", null, StatusCodes.UNAUTHORIZED),
       res

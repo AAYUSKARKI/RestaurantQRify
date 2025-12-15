@@ -1,4 +1,5 @@
 import { createClient, RedisClientType } from 'redis';
+import logger from '../utils/logger';
 
 export const redisClient: RedisClientType = createClient({
     username: process.env.REDIS_USERNAME,
@@ -10,14 +11,14 @@ export const redisClient: RedisClientType = createClient({
 });
 
 export const connectRedis = async () => {
-    redisClient.on('error', (err) => console.error('Redis Client Error', err));
-    redisClient.on('connect', () => console.log('Redis Client Connected'));
+    redisClient.on('error', (err) => logger.error('Redis Client Error', err));
+    redisClient.on('connect', () => logger.info('Redis Client Connected'));
 
     try {
         await redisClient.connect();
-        console.log('Redis initialized successfully.');
+        logger.info('Connected to Redis successfully');
     } catch (error) {
-        console.error('Failed to connect to Redis during startup:', error);
+        logger.error('Failed to connect to Redis during startup:', error);
         throw error;
     }
 };

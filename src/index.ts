@@ -1,21 +1,21 @@
 import { server } from "@/server";
 import { connectRedis } from "./common/lib/redis";
-
+import logger from "./common/utils/logger";
 const PORT = process.env.PORT || 3000;
 
 server.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
+    logger.info(`Server is running on http://localhost:${PORT}`);
     connectRedis();
 });
 
 const gracefulShutdown = () => {
-    console.log("Shutting down server...");
+    logger.info("Received shutdown signal, closing server...");
     server.close(() => {
-        console.log("Server closed");
+        logger.info("Server closed gracefully");
         process.exit(0);
     });
     setTimeout(() => {
-        console.error("Could not close server in time, forcefully shutting down");
+        logger.error("Could not close server in time, forcefully shutting down");
         process.exit(1);
     }, 5000).unref();
 };
