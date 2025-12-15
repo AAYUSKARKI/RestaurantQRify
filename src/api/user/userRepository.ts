@@ -32,6 +32,7 @@ export class UserRepository {
                         id: true,
                         role: true,
                         isActive: true,
+                        email: true
                     },
                 },
             },
