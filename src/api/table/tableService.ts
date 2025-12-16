@@ -44,6 +44,29 @@ export class TableService {
             return ServiceResponse.failure("Error creating Table", null, StatusCodes.INTERNAL_SERVER_ERROR);
         }
     }
+
+    async assignTableToWaiter(tableId: string, waiterId: string, userId: string): Promise<ServiceResponse<TableResponse | null>> {
+        try {
+            const user = await this.userRepository.findById(waiterId);
+            if(!user){
+                return ServiceResponse.failure(`Assigned waiter ${waiterId} does not exist`, null, StatusCodes.BAD_REQUEST);
+            }
+            const table = await this.tableRepository.assignTableToWaiter(tableId, waiterId);
+            await this.auditLogQueue.add("createAuditLog", {
+                userId,
+                action: TABLE_AUDIT_ACTIONS.TABLE_ASSIGNED_WAITER,
+                resourceType: "Table",
+                resourceId: table.id,
+                payload: table,
+                ip: null,
+                userAgent: null,
+            });
+            return ServiceResponse.success<TableResponse>("Table assigned to waiter successfully", table, StatusCodes.OK);
+        } catch (error) {
+            logger.error("Error assigning table to waiter:", error);
+            return ServiceResponse.failure("Error assigning table to waiter", null, StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
 
 export const tableService = new TableService();

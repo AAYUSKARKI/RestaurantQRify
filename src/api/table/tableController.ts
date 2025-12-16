@@ -1,6 +1,6 @@
 import { Request, RequestHandler, Response } from "express";
 import { ServiceResponse, handleServiceResponse } from "@/common/utils/serviceResponse";
-import { CreateTableSchema, TableResponse } from "./tableModel";
+import { CreateTableSchema,AssignWaiterSchema, TableResponse } from "./tableModel";
 import { tableService } from "./tableService";
 
 class TableController {
@@ -14,6 +14,20 @@ class TableController {
         const userId = req.user.id;
         const data = CreateTableSchema.parse(req.body);
         const serviceResponse: ServiceResponse<TableResponse | null> = await tableService.createTable(data, userId);
+        return handleServiceResponse(serviceResponse, res);
+    }
+
+    public assignTableToWaiter: RequestHandler = async (req: Request, res: Response) => {
+        if (!req.user || req.user.role !== "ADMIN") {
+            return handleServiceResponse(
+                ServiceResponse.failure("You do not have permission to perform this action", null, 403),
+                res
+            );
+        }        
+        const userId = req.user.id;
+        const { waiterId } = AssignWaiterSchema.parse(req.body);
+        const tableId = req.params.id;        
+        const serviceResponse: ServiceResponse<TableResponse | null> = await tableService.assignTableToWaiter(tableId, waiterId, userId);
         return handleServiceResponse(serviceResponse, res);
     }
 }

@@ -1,7 +1,7 @@
 import { OpenAPIRegistry } from "@asteasolutions/zod-to-openapi";
 import { Router } from "express";
 import { createApiResponse } from "@/api-docs/openAPIResponseBuilders";
-import { CreateTableSchema,TableResponseSchema,tableSchema } from "./tableModel";
+import { CreateTableSchema,TableResponseSchema,tableSchema, AssignWaiterSchema } from "./tableModel";
 import { tableController } from "./tableController";
 import { StatusCodes } from "http-status-codes";
 import { verifyJWT } from "@/common/middleware/verifyJWT";
@@ -39,3 +39,37 @@ tableRegistry.registerPath({
 });
 
 tableRouter.post("/table", verifyJWT, checkRole(["ADMIN"]), tableController.createTable);
+
+tableRegistry.registerPath({
+    method: "post",
+    path: "/api/table/assign/{id}",
+    summary: "Assign a table to a waiter",
+    tags: ["Table"],
+    parameters: [
+        {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: {
+                type: "string",
+            },
+            description: "ID of the table to be assigned",
+            example: "123e4567-e89b-12d3-a456-426655440000",
+        },
+    ],
+    request: {
+        body: {
+            description: "Waiter assignment details",
+            required: true,
+            content: {
+                "application/json": {
+                    schema: AssignWaiterSchema,
+                },
+            },
+        },
+    },
+    security: [{ bearerAuth: [] }],
+    responses: createApiResponse(TableResponseSchema, "Table assigned successfully", StatusCodes.OK),
+});
+
+tableRouter.post("/table/assign/:id", verifyJWT, checkRole(["ADMIN"]), tableController.assignTableToWaiter);

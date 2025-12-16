@@ -55,7 +55,12 @@ export const TableResponseSchema = tableSchema.pick({
     assignedTo: true,
 });
 
+export const AssignWaiterSchema = z.object({
+    waiterId: z.string().openapi({ description: "ID of the waiter to assign the table to",example: "123e4567-e89b-12d3-a456-426655440000"}),
+});
+
 export type Table = z.infer<typeof tableSchema>;
 export type CreateTable = z.infer<typeof CreateTableSchema>;
 export type UpdateTable = z.infer<typeof UpdateTableSchema>;
 export type TableResponse = z.infer<typeof TableResponseSchema>;    
+export type AssignWaiter = z.infer<typeof AssignWaiterSchema>;

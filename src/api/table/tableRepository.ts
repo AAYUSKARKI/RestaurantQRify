@@ -14,4 +14,18 @@ export class TableRepository {
              }
         });
     }
+
+    async assignTableToWaiter(tableId: string, waiterId: string): Promise<TableResponse> {
+        return prisma.table.update({
+             where: { id: tableId },
+             data: { assignedTo: waiterId },
+             select: {
+                 id: true,
+                 name: true,
+                 seats: true,
+                 status: true,
+                 assignedTo: true,
+             }
+        });
+    }
 }
