@@ -42,6 +42,29 @@ tableRegistry.registerPath({
 tableRouter.post("/table", verifyJWT, checkRole(["ADMIN"]), tableController.createTable);
 
 tableRegistry.registerPath({
+    method: "get",
+    path: "/api/table/available",
+    summary: "Find available tables by number of seats",
+    tags: ["Table"],
+    parameters: [
+        {
+            name: "seats",
+            in: "query",
+            required: true,
+            schema: {
+                type: "integer",
+            },
+            description: "Number of seats required",
+            example: 4,
+        },
+    ],
+    security: [{ bearerAuth: [] }],
+    responses: createApiResponse(TableResponseSchema.array(), "Available tables retrieved successfully", StatusCodes.OK),
+});
+
+tableRouter.get("/table/available", verifyJWT, tableController.findAvailableTablesBySeats);
+
+tableRegistry.registerPath({
     method: "patch",
     path: "/api/table/assign/{id}",
     summary: "Assign a table to a waiter",

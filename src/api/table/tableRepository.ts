@@ -85,4 +85,26 @@ export class TableRepository {
             }
         });
     }
+
+    async findAvailableTablesBySeats(requiredSeats: number): Promise<TableResponse[]> {
+        return prisma.table.findMany({
+            where: {
+                deletedAt: null,
+                status: 'AVAILABLE',
+                seats: {
+                    gte: requiredSeats,
+                },
+            },
+            orderBy: {
+                seats: 'asc',
+            },
+            select: {
+                id: true,
+                name: true,
+                seats: true,
+                status: true,
+                assignedTo: true,
+            }
+        });
+    }
 }

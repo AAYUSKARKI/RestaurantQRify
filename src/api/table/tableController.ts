@@ -73,6 +73,12 @@ class TableController {
         return handleServiceResponse(serviceResponse, res);
     }
 
+    public findAvailableTablesBySeats: RequestHandler = async (req: Request, res: Response) => {
+        const seats = parseInt(req.query.seats as string, 10);
+        const serviceResponse: ServiceResponse<TableResponse[] | null> = await tableService.findAvailableTablesBySeats(seats);
+        return handleServiceResponse(serviceResponse, res);
+    }
+
     public deleteTable: RequestHandler = async (req: Request, res: Response) => {
         if (!req.user || req.user.role !== "ADMIN") {
             return handleServiceResponse(

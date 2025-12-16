@@ -132,6 +132,19 @@ export class TableService {
         }
     }
 
+    async findAvailableTablesBySeats(requiredSeats: number): Promise<ServiceResponse<TableResponse[] | null>> {
+       try {
+        const availableTables = await this.tableRepository.findAvailableTablesBySeats(requiredSeats);
+        if(availableTables.length === 0){
+         return ServiceResponse.failure(`No available tables with at least ${requiredSeats} seats`, null, StatusCodes.NOT_FOUND);
+        }
+        return ServiceResponse.success<TableResponse[]>(`Available tables with at least ${requiredSeats} seats`, availableTables, StatusCodes.OK);
+       } catch (error) {
+        logger.error("Error finding available tables:", error);
+        return ServiceResponse.failure("Error finding available tables", null, StatusCodes.INTERNAL_SERVER_ERROR);
+       }
+    }
+
     async deleteTable(tableId: string, userId: string): Promise<ServiceResponse<null>> {
         try {
             await this.tableRepository.deleteTable(tableId);
