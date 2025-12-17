@@ -48,6 +48,25 @@ class MenuItemController {
         return handleServiceResponse(serviceResponse, res);
     }
 
+    public updateMenuItemImage: RequestHandler = async (req: Request, res: Response) => {
+        if (!req.user || req.user.role !== "ADMIN") {
+            return handleServiceResponse(
+                ServiceResponse.failure("You do not have permission to perform this action", null, 403),
+                res
+            );
+        }
+        const menuItemId = req.params.id;
+        const menuImage = req.file;
+        if(!menuImage){
+            return handleServiceResponse(
+                ServiceResponse.failure("Menu image is required", null, 400),
+                res
+            );
+        }
+        const serviceResponse: ServiceResponse<MenuItemResponse | null> = await menuItemService.updateMenuItemImage(menuItemId, menuImage);
+        return handleServiceResponse(serviceResponse, res);
+    }
+
     public deleteMenuItem: RequestHandler = async (req: Request, res: Response) => {
         if (!req.user || req.user.role !== "ADMIN") {
             return handleServiceResponse(

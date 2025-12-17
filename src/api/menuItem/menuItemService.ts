@@ -84,6 +84,21 @@ export class MenuItemService {
         }
     }
 
+    async updateMenuItemImage(menuItemId: string, menuImage: Express.Multer.File): Promise<ServiceResponse<MenuItemResponse | null>> {
+        try {
+            const uploadMenuImageResult = await uploadOnCloudinary(menuImage.path);
+            if (!uploadMenuImageResult) {
+                return ServiceResponse.failure("Failed to upload menu image", null, StatusCodes.INTERNAL_SERVER_ERROR);
+            }
+            const imageUrl = uploadMenuImageResult.secure_url;
+            const menuItem = await this.menuItemRepository.updateMenuItemImage(menuItemId, imageUrl);
+            return ServiceResponse.success<MenuItemResponse>("Menu item image updated successfully", menuItem, StatusCodes.OK);
+        } catch (error) {
+            logger.error("Error updating menu item image:", error);
+            return ServiceResponse.failure("Error updating menu item image", null, StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     async deleteMenuItem(menuItemId: string): Promise<ServiceResponse<MenuItemResponse | null>> {
         try {
             const menuItem = await this.menuItemRepository.deleteMenuItem(menuItemId);

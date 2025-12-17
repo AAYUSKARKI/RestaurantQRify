@@ -115,6 +115,46 @@ menuItemRegistry.registerPath({
 menuItemRouter.put("/menu-item/:id", verifyJWT, checkRole(["ADMIN"]), menuItemController.updateMenuItem);
 
 menuItemRegistry.registerPath({
+    method: "put",
+    path: "/api/menu-item/{id}/image",
+    summary: "Update menu item image by ID",
+    tags: ["MenuItem"],
+    parameters: [
+        {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: {
+                type: "string",
+            },
+            description: "ID of the menu item to be updated",
+            example: "123e4567-e89b-12d3-a456-426655440000",
+        },
+    ],
+    request: {
+        body: {
+            description: "Menu item image that needs to be updated",
+            required: true,
+            content: {
+                "multipart/form-data": {
+                    schema: z.object({
+                        menuImage: z.custom<Express.Multer.File>().openapi({
+                            type: "string",
+                            format: "binary",
+                            description: "Image file for the menu item",
+                        }),
+                    }),
+                },
+            },
+        },
+    },
+    security: [{ bearerAuth: [] }],
+    responses: createApiResponse(MenuItemResponseSchema, "Menu item image updated successfully", StatusCodes.OK),
+});
+
+menuItemRouter.put("/menu-item/:id/image", verifyJWT, checkRole(["ADMIN"]), upload.single("menuImage"), menuItemController.updateMenuItemImage);
+
+menuItemRegistry.registerPath({
     method: "delete",
     path: "/api/menu-item/{id}",
     summary: "Delete menu item by ID",
