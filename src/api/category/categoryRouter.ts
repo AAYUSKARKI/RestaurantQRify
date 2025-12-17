@@ -42,7 +42,7 @@ categoryRouter.post(
   "/category",
   verifyJWT,
   checkRole(["ADMIN"]),
-  categoryController.create
+  categoryController.createCategory
 );
 
 categoryRegistry.registerPath({
@@ -58,7 +58,7 @@ categoryRegistry.registerPath({
   ),
 });
 
-categoryRouter.get("/category", verifyJWT, categoryController.getAll);
+categoryRouter.get("/category", verifyJWT, categoryController.getAllCategories);
 
 categoryRegistry.registerPath({
   method: "get",
@@ -81,7 +81,7 @@ categoryRegistry.registerPath({
   ),
 });
 
-categoryRouter.get("/category/:id", verifyJWT, categoryController.getById);
+categoryRouter.get("/category/:id", verifyJWT, categoryController.getCategoryById);
 
 categoryRegistry.registerPath({
   method: "put",
@@ -115,7 +115,7 @@ categoryRouter.put(
   "/category/:id",
   verifyJWT,
   checkRole(["ADMIN"]),
-  categoryController.update
+  categoryController.updateCategory
 );
 
 categoryRegistry.registerPath({
@@ -143,5 +143,5 @@ categoryRouter.delete(
   "/category/:id",
   verifyJWT,
   checkRole(["ADMIN"]),
-  categoryController.delete
+  categoryController.deleteCategory
 );
