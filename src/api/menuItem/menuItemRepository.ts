@@ -33,4 +33,19 @@ export class MenuItemRepository {
             }
         });
     }
+
+    async findAll(): Promise<MenuItemResponse[]> {
+        return prisma.menuItem.findMany({
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                price: true,
+                imageUrl: true,
+                isAvailable: true,
+                isVeg: true,
+                categoryId: true,
+            }
+        });
+    }
 }

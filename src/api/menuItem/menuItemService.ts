@@ -63,6 +63,16 @@ export class MenuItemService {
             return ServiceResponse.failure("Error getting menu item by id", null, StatusCodes.INTERNAL_SERVER_ERROR);
         }
     }
+
+    async getAllMenuItems(): Promise<ServiceResponse<MenuItemResponse[] | null>> {
+        try {
+            const menuItems = await this.menuItemRepository.findAll();
+            return ServiceResponse.success<MenuItemResponse[]>("Menu items found successfully", menuItems, StatusCodes.OK);
+        } catch (error) {
+            logger.error("Error getting all menu items:", error);
+            return ServiceResponse.failure("Error getting all menu items", null, StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
 
 export const menuItemService = new MenuItemService();

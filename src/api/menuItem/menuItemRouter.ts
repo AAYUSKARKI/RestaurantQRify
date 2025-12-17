@@ -69,3 +69,13 @@ menuItemRegistry.registerPath({
 });
 
 menuItemRouter.get("/menu-item/:id", menuItemController.getMenuItemById);
+
+menuItemRegistry.registerPath({
+    method: "get",
+    path: "/api/menu-item",
+    summary: "Get all menu items",
+    tags: ["MenuItem"],
+    responses: createApiResponse(MenuItemResponseSchema.array(), "Menu items retrieved successfully", StatusCodes.OK),
+});
+
+menuItemRouter.get("/menu-item", menuItemController.getAllMenuItems);
