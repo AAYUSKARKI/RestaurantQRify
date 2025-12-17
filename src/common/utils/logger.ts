@@ -1,6 +1,5 @@
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
-import { DateTime } from 'luxon';
 
 const { combine, timestamp, errors, json } = winston.format;
 
@@ -11,7 +10,6 @@ const logger = winston.createLogger({
     errors({ stack: true }),
     json()
   ),
-  defaultMeta: { service: 'your-service-name' },
   transports: [
     new DailyRotateFile({
       filename: 'logs/%DATE%-combined.log',
