@@ -85,6 +85,20 @@ export class MenuItemService {
         }
     }
 
+    async getMenuItemByCategory(categoryId: string): Promise<ServiceResponse<MenuItemResponse[] | null>> {
+        try {
+            // const category = await this.categoryRepository.findById(categoryId);
+            // if(!category){
+            //     return ServiceResponse.failure(`Category ${categoryId} does not exist`, null, StatusCodes.BAD_REQUEST);
+            // }
+            const menuItems = await this.menuItemRepository.findByCategory(categoryId);
+            return ServiceResponse.success<MenuItemResponse[]>("Menu items found successfully", menuItems, StatusCodes.OK);
+        } catch (error) {
+            logger.error("Error getting menu items by category:", error);
+            return ServiceResponse.failure("Error getting menu items by category", null, StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     async updateMenuItem(menuItemId: string, data: UpdateMenuItem): Promise<ServiceResponse<MenuItemResponse | null>> {
         try {
             const menuItem = await this.menuItemRepository.updateMenuItem(menuItemId, data);

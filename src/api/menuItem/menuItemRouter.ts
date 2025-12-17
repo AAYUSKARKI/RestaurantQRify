@@ -91,6 +91,28 @@ menuItemRegistry.registerPath({
 menuItemRouter.get("/menu-item/available", menuItemController.getAvailableMenuItems);
 
 menuItemRegistry.registerPath({
+    method: "get",
+    path: "/api/menu-item/category/{id}",
+    summary: "Get menu items by category ID",
+    tags: ["MenuItem"],
+    parameters: [
+        {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: {
+                type: "string",
+            },
+            description: "ID of the category to filter menu items",
+            example: "123e4567-e89b-12d3-a456-426655440000",
+        },
+    ],
+    responses: createApiResponse(MenuItemResponseSchema.array(), "Menu items retrieved successfully", StatusCodes.OK),
+});
+
+menuItemRouter.get("/menu-item/category/:id", menuItemController.getMenuItemByCategory);
+
+menuItemRegistry.registerPath({
     method: "put",
     path: "/api/menu-item/{id}",
     summary: "Update menu item by ID",

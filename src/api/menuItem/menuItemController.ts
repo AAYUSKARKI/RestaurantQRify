@@ -40,6 +40,12 @@ class MenuItemController {
         return handleServiceResponse(serviceResponse, res);
     }
 
+    public getMenuItemByCategory: RequestHandler = async (req: Request, res: Response) => {
+        const categoryId = req.params.id;
+        const serviceResponse: ServiceResponse<MenuItemResponse[] | null> = await menuItemService.getMenuItemByCategory(categoryId);
+        return handleServiceResponse(serviceResponse, res);
+    }
+
     public updateMenuItem: RequestHandler = async (req: Request, res: Response) => {
         if (!req.user || req.user.role !== "ADMIN") {
             return handleServiceResponse(
