@@ -57,6 +57,7 @@
     "jsonwebtoken": "^9.0.3",
     "luxon": "^3.7.2",
     "memory-cache": "^0.2.0",
+    "multer": "^2.0.2",
     "pg": "^8.16.3",
     "redis": "^5.10.0",
     "swagger-ui-express": "^5.0.1",

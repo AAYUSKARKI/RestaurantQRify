@@ -10,7 +10,7 @@ export class CategoryService {
   private repo = new CategoryRepository();
   private auditQueue = new AuditLogQueue();
 
-  async create(data: CreateCategory, userId: string) {
+  async create(data: CreateCategory, userId: string): Promise<ServiceResponse<CategoryResponse | null>> {
     try {
       const category = await this.repo.create(data);
 
@@ -46,7 +46,7 @@ export class CategoryService {
     }
   }
 
-  async getAll() {
+  async getAll(): Promise<ServiceResponse<CategoryResponse[] | null>> {
     try {
       const categories = await this.repo.findAll();
 
@@ -65,7 +65,7 @@ export class CategoryService {
     }
   }
 
-  async getById(id: string) {
+  async getById(id: string): Promise<ServiceResponse<CategoryResponse | null>> {
     try {
       const category = await this.repo.findById(id);
 
@@ -92,7 +92,7 @@ export class CategoryService {
     }
   }
 
-  async update(id: string, data: UpdateCategory, userId: string) {
+  async update(id: string, data: UpdateCategory, userId: string): Promise<ServiceResponse<CategoryResponse | null>> {
     try {
       const existing = await this.repo.findById(id);
       if (!existing) {
@@ -128,7 +128,7 @@ export class CategoryService {
     }
   }
 
-  async delete(id: string, userId: string) {
+  async delete(id: string, userId: string): Promise<ServiceResponse<null>> {
     try {
       const existing = await this.repo.findById(id);
       if (!existing) {
@@ -149,7 +149,7 @@ export class CategoryService {
         payload: null,
       });
 
-      return ServiceResponse.success(
+      return ServiceResponse.success<null>(
         "Category deleted successfully",
         null,
         StatusCodes.OK
