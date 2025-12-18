@@ -2,7 +2,9 @@ import { userRegistry } from "@/api/user/userRouter";
 import { healthCheckRegistry } from "@/api/healthCheck/healthCheckRouter";
 import { tableRegistry } from "@/api/table/tableRouter";
 import { categoryRegistry } from "@/api/category/categoryRouter";
+import { menuItemRegistry } from "@/api/menuItem/menuItemRouter";
 import { OpenAPIRegistry, OpenApiGeneratorV3 } from "@asteasolutions/zod-to-openapi";
+import { reservationRegistry } from "@/api/reservation/reservationRouter";
 
 export type OpenAPIDocument = ReturnType<OpenApiGeneratorV3["generateDocument"]>;
 

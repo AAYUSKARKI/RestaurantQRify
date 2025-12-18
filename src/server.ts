@@ -9,6 +9,8 @@ import rateLimiter from "./common/middleware/rateLimiter";
 import { healthCheckRouter } from "./api/healthCheck/healthCheckRouter";
 import { tableRouter } from "./api/table/tableRouter";
 import { categoryRouter } from "./api/category/categoryRouter";
+import { menuItemRouter } from "./api/menuItem/menuItemRouter";
+import { reservationRouter } from "./api/reservation/reservationRouter";
 const app: Express = express();
 const server = http.createServer(app);
 
