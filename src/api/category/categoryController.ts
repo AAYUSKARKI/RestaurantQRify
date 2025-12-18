@@ -8,7 +8,7 @@ class CategoryController {
     const userId = req.user!.id;
     const data = CreateCategorySchema.parse(req.body);
 
-    const imagePath = req.file?.path; // multer file
+    const imagePath = req.file?.path; 
 
     const response = await categoryService.create(
       data,
