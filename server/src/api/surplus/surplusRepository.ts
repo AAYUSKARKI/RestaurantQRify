@@ -64,4 +64,21 @@ export class SurplusRepository {
             }
         });
     }
+
+    async deleteSurplusMark(surplusMarkId: string, deletedBy: string): Promise<SurplusMarkResponse> {
+        return prisma.surplusMark.update({
+            where: { id: surplusMarkId },
+            data: { deletedAt: new Date(), deletedBy },
+            include: {
+                menuItem: {
+                    select: {
+                        name: true,
+                        price: true,
+                        imageUrl: true,
+                        description: true
+                    }
+                }
+            }
+        });
+    }
 }

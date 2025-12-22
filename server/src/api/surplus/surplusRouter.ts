@@ -51,3 +51,26 @@ surplusRegistry.registerPath({
 
 surplusRouter.get("/surplus", surplusController.getActiveSpecials);
 
+surplusRegistry.registerPath({
+    method: "delete",
+    path: "/api/surplus/{id}",
+    summary: "Delete a surplus mark",
+    tags: ["Surplus"],
+    parameters: [
+        {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: {
+                type: "string",
+            },
+            description: "ID of the surplus mark to be deleted",
+            example: "123e4567-e89b-12d3-a456-426655440000",
+        },
+    ],
+    responses: createApiResponse(SurplusMarkResponseSchema, "Surplus mark deleted successfully", StatusCodes.OK),
+    security: [{ bearerAuth: [] }],
+});
+
+surplusRouter.delete("/surplus/:id", verifyJWT, checkRole([Role.ADMIN, Role.KITCHEN]), surplusController.deleteSurplusMark);
+

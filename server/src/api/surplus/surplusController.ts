@@ -4,7 +4,7 @@ import { surplusService } from "./surplusService";
 import { CreateSurplusMarkSchema, DailySpecialResponse, SurplusMarkResponse } from "./surplusModel";
 class SurplusController {
     public createSurplusMark: RequestHandler = async (req: Request, res: Response) => {
-        if(!req.user) {
+        if (!req.user) {
             return handleServiceResponse(ServiceResponse.failure("You are restricted to create a surplus mark", null, 403), res);
         }
         const data = CreateSurplusMarkSchema.parse(req.body);
@@ -13,9 +13,17 @@ class SurplusController {
     }
 
     public getActiveSpecials: RequestHandler = async (_req: Request, res: Response) => {
-    const serviceResponse: ServiceResponse<DailySpecialResponse[] | null> = await surplusService.getDailySpecials();
-    return handleServiceResponse(serviceResponse, res);
-}
+        const serviceResponse: ServiceResponse<DailySpecialResponse[] | null> = await surplusService.getDailySpecials();
+        return handleServiceResponse(serviceResponse, res);
+    }
+
+    public deleteSurplusMark: RequestHandler = async (req: Request, res: Response) => {
+        if (!req.user) {
+            return handleServiceResponse(ServiceResponse.failure("You are restricted to delete a surplus mark", null, 403), res);
+        }
+        const serviceResponse: ServiceResponse<SurplusMarkResponse | null> = await surplusService.deleteSurplusMark(req.params.id, req.user.id);
+        return handleServiceResponse(serviceResponse, res);
+    }
 }
 
 export const surplusController = new SurplusController();
