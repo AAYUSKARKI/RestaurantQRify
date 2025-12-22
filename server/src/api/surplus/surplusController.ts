@@ -17,6 +17,20 @@ class SurplusController {
         return handleServiceResponse(serviceResponse, res);
     }
 
+    public getSurplusMarkById: RequestHandler = async (req: Request, res: Response) => {
+        const serviceResponse: ServiceResponse<SurplusMarkResponse | null> = await surplusService.getSurplusMarkById(req.params.id);
+        return handleServiceResponse(serviceResponse, res);
+    }
+
+    public updateSurplusMark: RequestHandler = async (req: Request, res: Response) => {
+        if (!req.user) {
+            return handleServiceResponse(ServiceResponse.failure("You are restricted to update a surplus mark", null, 403), res);
+        }
+        const data = CreateSurplusMarkSchema.parse(req.body);
+        const serviceResponse: ServiceResponse<SurplusMarkResponse | null> = await surplusService.updateSurplusMark(req.params.id, data, req.user.id);
+        return handleServiceResponse(serviceResponse, res);
+    }
+
     public deleteSurplusMark: RequestHandler = async (req: Request, res: Response) => {
         if (!req.user) {
             return handleServiceResponse(ServiceResponse.failure("You are restricted to delete a surplus mark", null, 403), res);

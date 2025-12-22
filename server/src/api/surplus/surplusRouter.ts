@@ -52,6 +52,29 @@ surplusRegistry.registerPath({
 surplusRouter.get("/surplus", surplusController.getActiveSpecials);
 
 surplusRegistry.registerPath({
+    method: "get",
+    path: "/api/surplus/{id}",
+    summary: "Get a specific surplus mark",
+    tags: ["Surplus"],
+    parameters: [
+        {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: {
+                type: "string",
+            },
+            description: "ID of the surplus mark to be retrieved",
+            example: "123e4567-e89b-12d3-a456-426655440000",
+        },
+    ],
+    responses: createApiResponse(SurplusMarkResponseSchema, "Surplus mark retrieved successfully", StatusCodes.OK),
+    security: [{ bearerAuth: [] }],
+});
+
+surplusRouter.get("/surplus/:id", verifyJWT, checkRole([Role.ADMIN, Role.KITCHEN]), surplusController.getSurplusMarkById);
+
+surplusRegistry.registerPath({
     method: "delete",
     path: "/api/surplus/{id}",
     summary: "Delete a surplus mark",
@@ -73,4 +96,38 @@ surplusRegistry.registerPath({
 });
 
 surplusRouter.delete("/surplus/:id", verifyJWT, checkRole([Role.ADMIN, Role.KITCHEN]), surplusController.deleteSurplusMark);
+
+surplusRegistry.registerPath({
+    method: "put",
+    path: "/api/surplus/{id}",
+    summary: "Update a surplus mark",
+    tags: ["Surplus"],
+    parameters: [
+        {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: {
+                type: "string",
+            },
+            description: "ID of the surplus mark to be updated",
+            example: "123e4567-e89b-12d3-a456-426655440000",
+        },
+    ],
+    request: {
+        body: {
+            description: "Surplus mark object that needs to be updated",
+            required: true,
+            content: {
+                "application/json": {
+                    schema: CreateSurplusMarkSchema,
+                },
+            },
+        },
+    },
+    responses: createApiResponse(SurplusMarkResponseSchema, "Surplus mark updated successfully", StatusCodes.OK),
+    security: [{ bearerAuth: [] }],
+});
+
+surplusRouter.put("/surplus/:id", verifyJWT, checkRole([Role.ADMIN, Role.KITCHEN]), surplusController.updateSurplusMark);
 

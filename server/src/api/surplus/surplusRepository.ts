@@ -65,10 +65,43 @@ export class SurplusRepository {
         });
     }
 
+    async updateSurplusMark(surplusMarkId: string, data: CreateSurplusMark, markedBy: string): Promise<SurplusMarkResponse> {
+        return prisma.surplusMark.update({
+            where: { id: surplusMarkId },
+            data: { ...data, markedBy },
+            include: {
+                menuItem: {
+                    select: {
+                        name: true,
+                        price: true,
+                        imageUrl: true,
+                        description: true
+                    }
+                }
+            }
+        });
+    }
+
     async deleteSurplusMark(surplusMarkId: string, deletedBy: string): Promise<SurplusMarkResponse> {
         return prisma.surplusMark.update({
             where: { id: surplusMarkId },
             data: { deletedAt: new Date(), deletedBy },
+            include: {
+                menuItem: {
+                    select: {
+                        name: true,
+                        price: true,
+                        imageUrl: true,
+                        description: true
+                    }
+                }
+            }
+        });
+    }
+
+    async findSurplusMarkById(surplusMarkId: string): Promise<SurplusMarkResponse | null> {
+        return prisma.surplusMark.findUnique({
+            where: { id: surplusMarkId },
             include: {
                 menuItem: {
                     select: {

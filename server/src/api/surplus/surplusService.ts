@@ -90,6 +90,38 @@ export class SurplusService {
         }
     }
 
+    async getSurplusMarkById(surplusMarkId: string): Promise<ServiceResponse<SurplusMarkResponse | null>> {
+        try {
+            const surplusMark = await this.surplusRepository.findSurplusMarkById(surplusMarkId);
+            if (!surplusMark) {
+                return ServiceResponse.failure("Surplus mark not found", null, StatusCodes.NOT_FOUND);
+            }
+            return ServiceResponse.success<SurplusMarkResponse>("Surplus mark found successfully", surplusMark, StatusCodes.OK);
+        } catch (error) {
+            logger.error("Error getting surplus mark by id:", error);
+            return ServiceResponse.failure("Error getting surplus mark by id", null, StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    async updateSurplusMark(surplusMarkId: string, data: CreateSurplusMark, markedBy: string): Promise<ServiceResponse<SurplusMarkResponse | null>> {
+        try {
+            const updatedSurplusMark = await this.surplusRepository.updateSurplusMark(surplusMarkId, data, markedBy);
+            await this.auditLogQueue.add("createAuditLog", {
+                userId: markedBy,
+                action: SURPLUS_MARK_AUDIT_ACTIONS.UPDATED,
+                resourceType: "SurplusMark",
+                resourceId: surplusMarkId,
+                payload: updatedSurplusMark,
+                ip: null,
+                userAgent: null,
+            });
+            return ServiceResponse.success<SurplusMarkResponse>("Surplus mark updated successfully", updatedSurplusMark, StatusCodes.OK);
+        } catch (error) {
+            logger.error("Error updating surplus mark:", error);
+            return ServiceResponse.failure("Error updating surplus mark", null, StatusCodes.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     async deleteSurplusMark(surplusMarkId: string, markedBy: string): Promise<ServiceResponse<SurplusMarkResponse | null>> {
         try {
             const deletedSurplusMark = await this.surplusRepository.deleteSurplusMark(surplusMarkId, markedBy);
