@@ -70,7 +70,7 @@ export class MenuItemRepository {
         });
     }
 
-    async findAvailableByIds(menuItemIds: string[]): Promise<Array<{ id: string; price: Prisma.Decimal }>> {
+    async findAvailableByIds(menuItemIds: string[]): Promise<Array<{ id: string; price: Prisma.Decimal, surplusMarks: { discountPct: Prisma.Decimal }[]}>> {
         return prisma.menuItem.findMany({
             where: { 
                 id: {
@@ -81,7 +81,18 @@ export class MenuItemRepository {
             },
             select: {
                 id: true,
-                price: true
+                price: true,
+                surplusMarks: {
+                    where: {
+                        deletedAt: null,
+                        surplusAt: { lte: new Date() },
+                        surplusUntil: { gte: new Date() }
+                    },
+                    select: {
+                        discountPct: true
+                    },
+                    take: 1
+                }
             }
         })   
     }
