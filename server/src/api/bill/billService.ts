@@ -71,6 +71,17 @@ export class BillService {
         }
     }
 
+    async getBillById(id: string): Promise<ServiceResponse<BillResponse | null>> {
+        const bill = await this.billRepository.findById(id);
+        if (!bill) return ServiceResponse.failure("Bill not found", null, StatusCodes.NOT_FOUND);
+        return ServiceResponse.success("Bill retrieved", bill);
+    }
+
+    async getAllBills(): Promise<ServiceResponse<BillResponse[]>> {
+        const bills = await this.billRepository.findAll();
+        return ServiceResponse.success("Bills retrieved", bills);
+    }
+
 }
 
 export const billService = new BillService();

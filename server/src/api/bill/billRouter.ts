@@ -13,6 +13,12 @@ export const billRouter: Router = Router();
 
 billRegistry.register("Bill", billSchema);
 
+billRegistry.registerComponent("securitySchemes", "bearerAuth", {
+    type: "http",
+    scheme: "bearer",
+    bearerFormat: "JWT",
+});
+
 billRegistry.registerPath({
     method: "post",
     path: "/api/bill",
@@ -33,3 +39,37 @@ billRegistry.registerPath({
 });
 
 billRouter.post("/bill", verifyJWT, checkRole([Role.ADMIN, Role.CASHIER]), billController.createBill);
+
+billRegistry.registerPath({
+    method: "get",
+    path: "/api/bill/{id}",
+    parameters: [
+        {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: {
+                type: "string",
+            },
+            description: "ID of the bill to be retrieved",
+            example: "123e4567-e89b-12d3-a456-426655440000",
+        },
+    ],
+    summary: "Get a bill by id",
+    tags: ["Bill"],
+    security: [{ bearerAuth: [] }],
+    responses: createApiResponse(BillResponseSchema, "Bill retrieved successfully", StatusCodes.OK),
+});
+
+billRouter.get("/bill/:id", verifyJWT, checkRole([Role.ADMIN, Role.CASHIER]), billController.getBillById);
+
+billRegistry.registerPath({
+    method: "get",
+    path: "/api/bill",
+    summary: "Get all bills",
+    tags: ["Bill"],
+    security: [{ bearerAuth: [] }],
+    responses: createApiResponse(BillResponseSchema, "Bills retrieved successfully", StatusCodes.OK),
+});
+
+billRouter.get("/bill", verifyJWT, checkRole([Role.ADMIN, Role.CASHIER]), billController.getAllBills);

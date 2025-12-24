@@ -12,6 +12,16 @@ class BillController {
         const serviceResponse = await billService.createBill(data, req.user.id);
         return handleServiceResponse(serviceResponse, res);
     }
+
+    public getBillById: RequestHandler = async (req: Request, res: Response) => {
+        const serviceResponse = await billService.getBillById(req.params.id);
+        return handleServiceResponse(serviceResponse, res);
+    }
+
+    public getAllBills: RequestHandler = async (_req: Request, res: Response) => {
+        const serviceResponse = await billService.getAllBills();
+        return handleServiceResponse(serviceResponse, res);
+    }
 }
 
 export const billController = new BillController();

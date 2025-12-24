@@ -53,4 +53,15 @@ export class BillRepository {
         });
         return bill;
     }
+
+    async findById(id: string): Promise<BillResponse | null> {
+        return await prisma.bill.findUnique({
+            where: { id, deletedAt: null },
+            include: { order: { include: { items: { include: { menuItem: true } } } } }
+        });
+    }
+
+    async findAll(): Promise<BillResponse[]> {
+        return await prisma.bill.findMany({ include: { order: { include: { items: { include: { menuItem: true } } } } } });
+    }
 }
