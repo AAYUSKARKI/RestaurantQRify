@@ -1,18 +1,18 @@
 import { configureStore as ConfigureStore, combineReducers } from "@reduxjs/toolkit"
-import authReducer from "@/src/store/authSlice";
-import categoryReducer from "@/src/store/categorySlice";
-import menuItemReducer from "@/src/store/menuItemSlice";
-import tableReducer from "@/src/store/tableSlice";
-import reservationReducer from "@/src/store/reservationSlice";
-import orderReducer from "@/src/store/orderSlice";
-import allergenReducer from "@/src/store/allergenSlice";
-import menuItemAllergenReducer from "@/src/store/menuItemAllergenSlice";
-import billReducer from "@/src/store/billSlice";
-import surplusReducer from "@/src/store/surplusSlice";
-import kdsReducer from "@/src/store/kdsSlice";
-import auditLogReducer from "@/src/store/auditLogSlice";
-import healthReducer from "@/src/store/healthSlice";
-import themeReducer from "@/src/store/themeSlice";
+import authReducer from "../store/authSlice"
+import categoryReducer from "../store/categorySlice";
+import menuItemReducer from "../store/menuItemSlice";
+import tableReducer from "../store/tableSlice";
+import reservationReducer from "../store/reservationSlice";
+import orderReducer from "../store/orderSlice";
+import allergenReducer from "../store/allergenSlice";
+import menuItemAllergenReducer from "../store/menuItemAllergenSlice";
+import billReducer from "../store/billSlice";
+import surplusReducer from "../store/surplusSlice";
+import kdsReducer from "../store/kdsSlice";
+import auditLogReducer from "../store/auditLogSlice";
+import healthReducer from "../store/healthSlice";
+import themeReducer from "../store/themeSlice";
 import {
   persistReducer,
   FLUSH,

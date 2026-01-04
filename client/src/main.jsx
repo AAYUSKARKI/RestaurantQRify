@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import { Toaster } from 'react-hot-toast'
 import store, {persistor} from './store';
+import { Provider } from 'react-redux';
+import { PersistGate } from 'redux-persist/integration/react';
 import { LoadingOverlay } from './components/ui/LoadingOverlay';
 
 ReactDOM.createRoot(document.getElementById('root')).render(

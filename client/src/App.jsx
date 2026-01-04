@@ -9,11 +9,14 @@ import BillsPage from './pages/Bills';
 import ReservationsPage from './pages/Reservations';
 import SettingsPage from './pages/Settings';
 import KitchenPage from './pages/Kitchen';
+import LandingPage from './pages/LandingPage';
+import NotFound from './pages/NotFound';
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="*" element={<NotFound />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
         <Route path="/tables" element={<Tables />} />

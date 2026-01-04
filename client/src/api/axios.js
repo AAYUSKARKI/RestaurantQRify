@@ -32,7 +32,7 @@ API.interceptors.request.use((config) => {
 });
 
 // --- Response Interceptor ---
-api.interceptors.response.use(
+API.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
